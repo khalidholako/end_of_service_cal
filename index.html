@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حاسبة نهاية الخدمة | End of Service Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #b8920a;
+  --gold-light: #d4aa2a;
+  --gold-lighter: #f0cc55;
+  --gold-dark: #8a6d08;
+  --gold-bg: #fdf8ec;
+  --gold-border: #dcc060;
+  --dark: #1c1c1e;
+  --dark2: #2c2c2e;
+  --gray-dark: #3a3a3c;
+  --gray: #636366;
+  --gray-light: #98989a;
+  --surface: #ffffff;
+  --red: #c0392b;
+  --red-light: #fdf0ee;
+  --red-border: #f0b8b2;
+  --green: #1a6b3a;
+  --green-light: #edf8f2;
+  --green-border: #9ed3b4;
+  /* Table */
+  --th-bg: #22222a;
+  --th-color: #f0cc55;
+  --td-border: #e5e5ea;
+  --tr-even: #f9f9fb;
+  --tr-hover: #faf5e4;
+  --total-bg: #22222a;
+  --total-color: #f0cc55;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Cairo', 'Tajawal', sans-serif;
+  background: linear-gradient(160deg, #f2ede0 0%, #eae5d5 100%);
+  color: var(--dark);
+  min-height: 100vh;
+  direction: rtl;
+}
+
+/* ===== APP HEADER ===== */
+.app-header {
+  background: linear-gradient(135deg, #0f0f14 0%, #1c1c28 60%, #0f0f14 100%);
+  color: white;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 3px solid var(--gold-light);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+  position: sticky; top: 0; z-index: 100;
+}
+.app-header img { width: 60px; height: 60px; object-fit: contain; }
+.header-text h1 { font-size: 1.4rem; font-weight: 900; color: var(--gold-lighter); }
+.header-text p { font-size: 0.78rem; color: #bbb; margin-top: 1px; }
+.header-text .en { font-size: 0.72rem; color: var(--gold-light); opacity: 0.8; }
+
+/* ===== MAIN WRAPPER ===== */
+.form-section {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+/* ===== CARD ===== */
+.card {
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08), 0 0 0 1px rgba(184,146,10,0.12);
+  overflow: hidden;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #1c1c28 0%, #2a2a3a 100%);
+  color: var(--gold-lighter);
+  padding: 13px 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--gold-dark);
+}
+.card-header .en-label { font-size: 0.7rem; color: #aaa; margin-right: auto; font-weight: 400; }
+
+.card-body { padding: 22px; }
+
+/* ===== FORM GRID ===== */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gray-dark);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+label .en-hint { font-weight: 400; color: var(--gray-light); font-size: 0.7rem; }
+label .req { color: var(--red); }
+
+input[type=text], input[type=number], input[type=date], select {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1.5px solid #d8d8dc;
+  border-radius: 9px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.88rem;
+  color: var(--dark);
+  background: #fdfdff;
+  transition: border 0.2s, box-shadow 0.2s;
+  direction: rtl;
+}
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--gold-light);
+  box-shadow: 0 0 0 3px rgba(184,146,10,0.12);
+  background: #fff;
+}
+
+.warning-box {
+  background: #fff8e1;
+  border: 1.5px solid #f0c040;
+  border-radius: 8px;
+  padding: 9px 13px;
+  font-size: 0.82rem;
+  color: #6a4900;
+  display: none;
+  margin-top: 5px;
+  gap: 7px;
+  align-items: center;
+}
+.warning-box.show { display: flex; }
+
+/* ===== PAID TABLE INPUT ===== */
+.paid-table-wrap { overflow-x: auto; border-radius: 10px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+.paid-input-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.paid-input-table th {
+  background: var(--th-bg);
+  color: var(--th-color);
+  padding: 10px 11px;
+  font-weight: 700;
+  text-align: center;
+  border: 1px solid #3a3a3c;
+  font-size: 0.75rem;
+}
+.paid-input-table td {
+  padding: 7px 8px;
+  border: 1px solid #e5e5ea;
+  text-align: center;
+  background: #fff;
+}
+.paid-input-table tr:nth-child(even) td { background: var(--tr-even); }
+.paid-input-table input {
+  border: 1px solid #d0d0d5;
+  border-radius: 6px;
+  padding: 6px 9px;
+  font-size: 0.82rem;
+  width: 100%;
+  text-align: center;
+  font-family: 'Cairo', sans-serif;
+  background: #fdfdff;
+}
+.paid-input-table input:focus { outline: none; border-color: var(--gold-light); background: #fff; }
+.paid-input-table input[type=date] { direction: ltr; }
+
+.btn-add-row, .btn-del-row {
+  border: none; border-radius: 7px;
+  padding: 5px 11px; cursor: pointer;
+  font-size: 0.78rem; font-family: 'Cairo', sans-serif; transition: 0.2s;
+}
+.btn-add-row {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: #fff; font-weight: 700; margin-top: 10px; padding: 8px 18px;
+  box-shadow: 0 2px 8px rgba(184,146,10,0.25);
+}
+.btn-add-row:hover { filter: brightness(1.1); }
+.btn-del-row { background: var(--red-light); color: var(--red); border: 1px solid var(--red-border); }
+.btn-del-row:hover { background: #f8d7d4; }
+
+/* ===== ACTIONS ===== */
+.actions { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+
+.btn-calc {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: #fff; border: none; border-radius: 11px;
+  padding: 12px 30px; font-family: 'Cairo', sans-serif;
+  font-size: 0.95rem; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(184,146,10,0.32);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-calc:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(184,146,10,0.40); }
+.btn-calc:active { transform: translateY(0); }
+
+.btn-reset {
+  background: transparent; border: 2px solid #d0d0d5;
+  border-radius: 11px; padding: 10px 20px;
+  font-family: 'Cairo', sans-serif; font-size: 0.88rem;
+  font-weight: 600; color: var(--gray); cursor: pointer;
+  transition: 0.2s;
+}
+.btn-reset:hover { border-color: var(--dark); color: var(--dark); }
+
+/* ===== REPORT ===== */
+#reportSection { display: none; margin-top: 24px; }
+
+.report-card {
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 4px 28px rgba(0,0,0,0.13), 0 0 0 1.5px rgba(184,146,10,0.20);
+  overflow: hidden;
+}
+
+/* ===== REPORT HEADER ===== */
+.report-header {
+  background: linear-gradient(135deg, #0f0f14 0%, #1e1e2a 100%);
+  padding: 20px 26px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 3px solid var(--gold-light);
+}
+.report-header img {
+  width: 68px; height: 68px; object-fit: contain;
+}
+.report-header-text { flex: 1; text-align: center; }
+.company-name-ar { font-size: 1.25rem; font-weight: 900; color: var(--gold-lighter); letter-spacing: 2px; }
+.company-name-en { font-size: 0.72rem; color: #aaa; letter-spacing: 1px; }
+.report-title-ar { font-size: 1rem; font-weight: 700; color: #fff; margin-top: 5px; }
+.report-title-en { font-size: 0.7rem; color: var(--gold-light); opacity: 0.85; }
+
+/* ===== EMP INFO STRIP ===== */
+.emp-info-strip {
+  background: linear-gradient(90deg, #fdf8ec 0%, #fff 60%, #fdf8ec 100%);
+  border-bottom: 2px solid var(--gold-border);
+  padding: 14px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.info-item { display: flex; flex-direction: column; gap: 3px; }
+.info-label-ar { font-size: 0.68rem; color: var(--gold-dark); font-weight: 800; letter-spacing: 0.3px; }
+.info-value { font-size: 0.92rem; font-weight: 700; color: var(--dark); }
+.info-value.highlight { color: var(--gold-dark); font-size: 0.98rem; }
+
+.duration-badge {
+  background: var(--dark2);
+  color: var(--gold-lighter);
+  border-radius: 7px;
+  padding: 3px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.reason-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--gold-dark);
+}
+
+/* ===== REPORT BODY ===== */
+.report-body { padding: 18px 22px; }
+
+.tables-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.table-section h3 {
+  font-size: 0.86rem; font-weight: 800;
+  color: var(--gold-dark); margin-bottom: 8px;
+  padding-right: 10px;
+  border-right: 4px solid var(--gold-light);
+  line-height: 1.5;
+  display: flex; flex-direction: column;
+}
+.table-section h3 .en { font-size: 0.65rem; color: var(--gray-light); font-weight: 500; }
+
+/* ===== PROFESSIONAL TABLES ===== */
+.rep-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.8rem;
+  border: 1.5px solid var(--td-border);
+  border-radius: 11px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.rep-table thead tr th {
+  background: var(--th-bg);
+  color: var(--th-color);
+  padding: 10px 10px;
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 2px solid var(--gold-dark);
+  border-left: 1px solid #3a3a3c;
+  font-size: 0.75rem;
+  letter-spacing: 0.2px;
+}
+.rep-table thead tr th:last-child { border-left: none; }
+.rep-table tbody tr td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--td-border);
+  border-left: 1px solid var(--td-border);
+  text-align: center;
+  vertical-align: middle;
+  background: var(--surface);
+  transition: background 0.15s;
+}
+.rep-table tbody tr td:last-child { border-left: none; }
+.rep-table tbody tr:nth-child(even) td { background: var(--tr-even); }
+.rep-table tbody tr:last-child td { border-bottom: none; }
+.rep-table tbody tr:hover td { background: var(--tr-hover); }
+
+/* Total footer row */
+.rep-table tfoot tr.total-row td {
+  background: var(--total-bg) !important;
+  color: var(--total-color);
+  font-weight: 800;
+  border-top: 2px solid var(--gold-dark);
+  border-left: 1px solid #444;
+  font-size: 0.88rem;
+  padding: 9px 10px;
+}
+.rep-table tfoot tr.total-row td:last-child { border-left: none; }
+
+.period-cell {
+  white-space: nowrap; font-size: 0.72rem;
+  color: var(--gray); text-align: right !important;
+  padding-right: 10px !important;
+  font-weight: 600;
+}
+.amount-cell { font-weight: 800; color: var(--green); font-size: 0.88rem; }
+.amount-cell.paid { color: var(--red); }
+.duration-cell { font-size: 0.7rem; color: var(--gray); }
+
+/* Row number badge */
+.row-num {
+  width: 22px; height: 22px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 800; color: var(--gold-dark);
+}
+
+/* ===== NO ENTITLEMENT BADGE ===== */
+.no-entitlement-cell {
+  text-align: center !important;
+  padding: 24px 16px !important;
+  background: var(--red-light) !important;
+}
+.no-ent-icon {
+  width: 64px; height: 64px;
+  background: var(--red);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+  box-shadow: 0 4px 16px rgba(192,57,43,0.3);
+  position: relative;
+}
+.no-ent-icon::before {
+  content: '';
+  width: 34px; height: 4px;
+  background: #fff;
+  border-radius: 2px;
+  position: absolute;
+}
+.no-ent-icon .shield {
+  font-size: 2rem;
+  line-height: 1;
+}
+.no-ent-title {
+  font-size: 0.92rem; font-weight: 900; color: var(--red);
+  margin-bottom: 3px;
+}
+.no-ent-sub {
+  font-size: 0.72rem; color: var(--gray); margin-bottom: 6px;
+}
+.no-ent-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--red); color: #fff;
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 0.75rem; font-weight: 700;
+  box-shadow: 0 2px 8px rgba(192,57,43,0.3);
+}
+
+/* ===== NET SECTION ===== */
+.net-section {
+  border-radius: 12px;
+  padding: 15px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 4px;
+  border: 2px solid;
+}
+.net-section.positive {
+  background: linear-gradient(135deg, #0f1a14 0%, #162211 100%);
+  border-color: var(--green-border);
+}
+.net-section.negative {
+  background: linear-gradient(135deg, #1a0f0f 0%, #220f0f 100%);
+  border-color: var(--red-border);
+}
+.net-label { color: #ddd; font-size: 0.9rem; font-weight: 700; }
+.net-label .en { display: block; font-size: 0.68rem; color: #888; margin-top: 2px; }
+.net-amount { font-size: 1.5rem; font-weight: 900; }
+.net-amount.positive { color: #4cd984; }
+.net-amount.negative { color: #ff6b6b; }
+.net-amount .currency { font-size: 0.8rem; margin-right: 5px; color: #aaa; }
+
+/* ===== OVERPAID WARNING ===== */
+.overpaid-warning {
+  display: none;
+  background: linear-gradient(135deg, #fdf0ee 0%, #fae6e3 100%);
+  border: 2px solid var(--red-border);
+  border-radius: 11px;
+  padding: 14px 18px;
+  margin-top: 12px;
+  align-items: flex-start;
+  gap: 12px;
+}
+.overpaid-warning.show { display: flex; }
+.warn-icon-big {
+  width: 44px; height: 44px; flex-shrink: 0;
+  background: var(--red);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 3px 10px rgba(192,57,43,0.3);
+}
+.warn-text-title { font-size: 0.9rem; font-weight: 800; color: var(--red); margin-bottom: 3px; }
+.warn-text-sub { font-size: 0.78rem; color: #7a2020; line-height: 1.6; }
+
+/* ===== NOTES ===== */
+.calc-notes {
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 9px;
+  padding: 11px 15px;
+  font-size: 0.78rem;
+  color: #5a4500;
+  margin-top: 12px;
+  display: none;
+  line-height: 1.8;
+}
+.calc-notes strong { display: block; margin-bottom: 4px; }
+
+/* ===== PRINT BAR ===== */
+.print-bar {
+  background: linear-gradient(90deg, var(--gold-bg) 0%, #fff 50%, var(--gold-bg) 100%);
+  padding: 13px 22px;
+  border-top: 2px solid var(--gold-border);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.btn-print {
+  background: linear-gradient(135deg, #1c1c28 0%, #2a2a3a 100%);
+  color: var(--gold-lighter);
+  border: 2px solid var(--gold-dark);
+  border-radius: 10px;
+  padding: 9px 22px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.88rem; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: 0.2s;
+}
+.btn-print:hover { background: #14141e; }
+
+/* ===== SAR SYMBOL ===== */
+.sar {
+  font-size: 0.9em;
+  font-family: 'Arial', sans-serif;
+  color: inherit;
+}
+.sar-big { font-size: 1.1em; font-family: 'Arial', sans-serif; }
+
+/* ===== PRINT ===== */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 4mm 5mm;
+  }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body {
+    background: #fff !important;
+    margin: 0; padding: 0;
+  }
+  .app-header { display: none !important; }
+  .form-section > .card { display: none !important; }
+  .print-bar { display: none !important; }
+  .form-section { margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
+  #reportSection {
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    margin-top: 0 !important;
+  }
+  .report-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    margin-top: 0 !important;
+    border-radius: 0 !important;
+    /* Scale to fit single A4 landscape page */
+    zoom: 0.78;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .report-header img {
+    filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+  }
+  /* Compact print spacing */
+  .report-header { padding: 12px 18px !important; }
+  .emp-info-strip { padding: 10px 18px !important; gap: 8px !important; }
+  .report-body { padding: 10px 16px !important; }
+  .tables-row { gap: 12px !important; margin-bottom: 10px !important; }
+  .rep-table th, .rep-table td { padding: 5px 7px !important; font-size: 0.72rem !important; }
+  .net-section { padding: 10px 16px !important; }
+  .calc-notes { padding: 7px 12px !important; font-size: 0.72rem !important; margin-top: 8px !important; }
+  .no-entitlement-cell { padding: 14px 10px !important; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .form-grid { grid-template-columns: repeat(2, 1fr); }
+  .tables-row { grid-template-columns: 1fr; }
+  .emp-info-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .emp-info-strip { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<div class="app-header">
+  <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAA" alt="logo">
+  <div class="header-text">
+    <h1>✦ لمسات &nbsp;|&nbsp; Lamasat ✦</h1>
+    <p>حاسبة مكافأة نهاية الخدمة</p>
+    <p class="en">End of Service Gratuity Calculator</p>
+  </div>
+</div>
+
+<div class="form-section">
+
+<!-- ===== INPUT CARD ===== -->
+<div class="card" id="inputCard">
+  <div class="card-header">
+    <span>📋</span>
+    بيانات الموظف/ة
+    <span class="en-label">Employee Information</span>
+  </div>
+  <div class="card-body">
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>👤 اسم الموظف/ة <span class="req">*</span> <span class="en-hint">Employee Name</span></label>
+        <input type="text" id="empName" placeholder="الاسم كاملاً">
+      </div>
+      <div class="form-group">
+        <label>🔢 الرقم الوظيفي <span class="en-hint">Employee ID</span></label>
+        <input type="text" id="empId" placeholder="EMP-001">
+      </div>
+      <div class="form-group">
+        <label>🏪 الفرع <span class="en-hint">Branch</span></label>
+        <input type="text" id="branch" placeholder="اسم الفرع">
+      </div>
+
+      <div class="form-group">
+        <label>📅 تاريخ التعيين <span class="req">*</span> <span class="en-hint">Hire Date</span></label>
+        <input type="date" id="hireDate">
+      </div>
+      <div class="form-group">
+        <label>📅 تاريخ آخر دوام <span class="req">*</span> <span class="en-hint">Last Working Day</span></label>
+        <input type="date" id="lastDay">
+      </div>
+      <div class="form-group">
+        <label>💰 الراتب الأساسي (ريال) <span class="req">*</span> <span class="en-hint">Basic Salary SAR</span></label>
+        <input type="number" id="salary" placeholder="0.00" min="0" step="0.01">
+      </div>
+
+      <div class="form-group full">
+        <label>⚖️ سبب إنهاء الخدمة <span class="req">*</span> <span class="en-hint">Termination Reason</span></label>
+        <select id="termReason" onchange="onReasonChange()">
+          <option value="">-- اختر سبب الإنهاء | Select Reason --</option>
+          <option value="resignation">استقالة | Resignation</option>
+          <option value="probation">فترة التجربة (≤180 يوم) | Probation Period</option>
+          <option value="art80">فصل - المادة 80 | Dismissal Art.80</option>
+          <option value="contract_end">انتهاء عقد | Contract Expiry</option>
+          <option value="fixed_term_end">انتهاء عقد محدد المدة | Fixed-Term Expiry</option>
+          <option value="art81">فصل - المادة 81 | Termination Art.81</option>
+          <option value="mutual">إنهاء باتفاق الطرفين | Mutual Agreement</option>
+          <option value="force_majeure">إنهاء بسبب قوة قاهرة | Force Majeure</option>
+          <option value="marriage">إنهاء الموظفة خلال 6أشهر من الزواج | Female - 6M Marriage</option>
+          <option value="childbirth">إنهاء الموظفة خلال 3أشهر من الوضع | Female - 3M Childbirth</option>
+          <option value="death">وفاة العامل أو صاحب العمل | Death</option>
+        </select>
+        <div class="warning-box" id="probationWarn">
+          ⚠️ مدة التجربة تجاوزت 180 يوماً المسموح بها نظامياً | Probation exceeds legal 180-day limit
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAID TABLE -->
+    <div style="margin-top:22px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <h3 style="font-size:0.9rem; font-weight:800; color:var(--gray-dark); display:flex; align-items:center; gap:8px;">
+          💳 المدفوع مقدماً من مكافأة نهاية الخدمة
+          <span style="font-size:0.7rem; color:var(--gray-light); font-weight:400;">Advance End of Service Paid</span>
+        </h3>
+        <button class="btn-add-row" onclick="addPaidRow()">+ إضافة سطر | Add Row</button>
+      </div>
+      <div class="paid-table-wrap">
+        <table class="paid-input-table" id="paidTable">
+          <thead>
+            <tr>
+              <th>من | From</th>
+              <th>إلى | To</th>
+              <th>المبلغ الشهري (ريال)</th>
+              <th>إجمالي المدفوع (ريال)</th>
+              <th>ملاحظة | Note</th>
+              <th style="width:40px;">🗑</th>
+            </tr>
+          </thead>
+          <tbody id="paidRows">
+            <tr>
+              <td><input type="date" class="paid-from" oninput="autoCalcPaid(this)"></td>
+              <td><input type="date" class="paid-to" oninput="autoCalcPaid(this)"></td>
+              <td><input type="number" class="paid-monthly" placeholder="100" min="0" step="0.01" oninput="autoCalcPaid(this)"></td>
+              <td><input type="number" class="paid-amount" placeholder="0.00" min="0" step="0.01" style="font-weight:800; color:var(--red);"></td>
+              <td><input type="text" class="paid-note" placeholder="ملاحظة..."></td>
+              <td><button class="btn-del-row" onclick="delRow(this)">✕</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-calc" onclick="calculate()">🧮 احتساب نهاية الخدمة &nbsp;|&nbsp; Calculate</button>
+      <button class="btn-reset" onclick="resetForm()">🔄 إعادة تعيين | Reset</button>
+    </div>
+  </div>
+</div><!-- /input card -->
+
+<!-- ===== REPORT SECTION ===== -->
+<div id="reportSection">
+<div class="report-card">
+
+  <!-- Report Header -->
+  <div class="report-header">
+    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQA" alt="logo">
+    <div class="report-header-text">
+      <div class="company-name-ar">✦ شركة لمسات ✦</div>
+      <div class="company-name-en">LAMASAT COMPANY</div>
+      <div class="report-title-ar" id="rptTitle">تقرير مكافأة نهاية الخدمة</div>
+      <div class="report-title-en">End of Service Gratuity Report</div>
+    </div>
+    <div style="text-align:left; min-width:110px;">
+      <div style="color:var(--gold-light); font-size:0.72rem; font-weight:700;">📅 تاريخ التقرير</div>
+      <div style="color:#ddd; font-size:0.8rem;" id="rptDate"></div>
+      <div style="color:#777; font-size:0.66rem; margin-top:1px;">Report Date</div>
+    </div>
+  </div>
+
+  <!-- Employee Info Strip -->
+  <div class="emp-info-strip">
+    <div class="info-item">
+      <span class="info-label-ar">👤 اسم الموظف/ة | Name</span>
+      <span class="info-value highlight" id="rptName"></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label-ar">🔢 الرقم الوظيفي | ID</span>
+      <span class="info-value" id="rptId"></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label-ar">🏪 الفرع | Branch</span>
+      <span class="info-value" id="rptBranch"></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label-ar">💰 الراتب الأساسي | Salary</span>
+      <span class="info-value" id="rptSalary"></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label-ar">📅 تاريخ التعيين | Hire</span>
+      <span class="info-value" id="rptHire"></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label-ar">📅 آخر يوم دوام | Last Day</span>
+      <span class="info-value" id="rptLast"></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label-ar">⏳ مدة الخدمة | Duration</span>
+      <span class="info-value" id="rptDuration"></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label-ar">⚖️ سبب الإنهاء | Reason</span>
+      <span class="info-value" id="rptReason"></span>
+    </div>
+  </div>
+
+  <!-- Tables -->
+  <div class="report-body">
+    <div class="tables-row">
+
+      <!-- Left: Entitlement -->
+      <div class="table-section">
+        <h3>
+          🏆 استحقاق مكافأة نهاية الخدمة
+          <span class="en">End of Service Entitlement</span>
+        </h3>
+        <table class="rep-table">
+          <thead>
+            <tr>
+              <th style="width:36px;">#</th>
+              <th>الفترة | Period</th>
+              <th>مدة الخدمة | Duration</th>
+              <th>المبلغ المستحق <span class="sar">&#xFDFC;</span></th>
+            </tr>
+          </thead>
+          <tbody id="entitlementRows"></tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="3" style="text-align:right; padding-right:14px; letter-spacing:0.3px;">
+                إجمالي الاستحقاق | Total Entitlement
+              </td>
+              <td id="totalEntitlement" style="color:var(--gold-lighter); font-size:0.95rem;">0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Right: Paid -->
+      <div class="table-section">
+        <h3>
+          💳 المدفوع مقدماً حسب العقود
+          <span class="en">Advance Paid per Contracts</span>
+        </h3>
+        <table class="rep-table">
+          <thead>
+            <tr>
+              <th style="width:36px;">#</th>
+              <th>الفترة | Period</th>
+              <th>المبلغ المدفوع (ريال)</th>
+            </tr>
+          </thead>
+          <tbody id="paidReportRows"></tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="2" style="text-align:right; padding-right:14px; letter-spacing:0.3px;">
+                إجمالي المدفوع | Total Paid
+              </td>
+              <td id="totalPaid" style="color:#ff8a80; font-size:0.95rem;">0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- Net -->
+    <div class="net-section positive" id="netSection">
+      <div class="net-label">
+        📊 صافي المستحق (الفرق)
+        <span class="en">Net Due Amount</span>
+      </div>
+      <div style="text-align:center; flex:1;">
+        <div id="netFormula" style="color:#aaa; font-size:0.76rem; font-family:monospace;"></div>
+      </div>
+      <div style="text-align:left;">
+        <div id="netAmount" class="net-amount positive">
+          <span class="currency"><span class="sar-big">&#xFDFC;</span></span><span id="netValue">0.00</span>
+        </div>
+        <div style="color:#666; font-size:0.64rem; text-align:center;">SAR</div>
+      </div>
+    </div>
+
+    <!-- Overpaid Warning -->
+    <div class="overpaid-warning" id="overpaidWarn">
+      <div class="warn-icon-big">⚠️</div>
+      <div>
+        <div class="warn-text-title">⛔ المبلغ المدفوع أكبر من المستحق | Overpaid Amount</div>
+        <div class="warn-text-sub">
+          المبلغ المدفوع مسبقاً يتجاوز إجمالي الاستحقاق، لذا لا يوجد صافي مستحق إضافي.<br>
+          <span style="font-size:0.7rem; opacity:0.8;">The advance paid exceeds total entitlement. No further amount is due.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="calc-notes" id="calcNotes">
+      <strong>📝 ملاحظات الحساب | Calculation Notes:</strong>
+      <div id="notesContent"></div>
+    </div>
+
+  </div><!-- /report-body -->
+
+  <div class="print-bar">
+    <button class="btn-print" onclick="window.print()">🖨️ طباعة / PDF</button>
+    <button class="btn-reset" onclick="goBackToEdit()" style="border-color:#b8920a; color:#8a6d08;">✏️ تعديل البيانات | Edit</button>
+    <button class="btn-reset" onclick="resetForm()" style="border-color:#ccc;">🔄 تقرير جديد | New</button>
+  </div>
+
+</div><!-- /report-card -->
+</div><!-- /reportSection -->
+
+</div><!-- /form-section -->
+
+<script>
+// ===== PAID AUTO CALC =====
+function autoCalcPaid(el) {
+  const row = el.closest('tr');
+  const fromVal = row.querySelector('.paid-from').value;
+  const toVal   = row.querySelector('.paid-to').value;
+  const monthly = parseFloat(row.querySelector('.paid-monthly').value) || 0;
+  if (fromVal && toVal && monthly > 0 && new Date(toVal) >= new Date(fromVal)) {
+    const diff = dateDiff(fromVal, toVal);
+    const months = diff.years * 12 + diff.months + (diff.days > 0 ? 1 : 0);
+    row.querySelector('.paid-amount').value = (months * monthly).toFixed(2);
+  }
+}
+
+function addPaidRow() {
+  const tbody = document.getElementById('paidRows');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="date" class="paid-from" oninput="autoCalcPaid(this)"></td>
+    <td><input type="date" class="paid-to" oninput="autoCalcPaid(this)"></td>
+    <td><input type="number" class="paid-monthly" placeholder="100" min="0" step="0.01" oninput="autoCalcPaid(this)"></td>
+    <td><input type="number" class="paid-amount" placeholder="0.00" min="0" step="0.01" style="font-weight:800; color:var(--red);"></td>
+    <td><input type="text" class="paid-note" placeholder="ملاحظة..."></td>
+    <td><button class="btn-del-row" onclick="delRow(this)">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+
+function delRow(btn) {
+  const tbody = document.getElementById('paidRows');
+  if (tbody.rows.length > 1) btn.closest('tr').remove();
+}
+
+function resetForm() {
+  ['empName','empId','branch','hireDate','lastDay','salary'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('termReason').value = '';
+  document.getElementById('probationWarn').classList.remove('show');
+  document.getElementById('paidRows').innerHTML = `
+    <tr>
+      <td><input type="date" class="paid-from" oninput="autoCalcPaid(this)"></td>
+      <td><input type="date" class="paid-to" oninput="autoCalcPaid(this)"></td>
+      <td><input type="number" class="paid-monthly" placeholder="100" min="0" step="0.01" oninput="autoCalcPaid(this)"></td>
+      <td><input type="number" class="paid-amount" placeholder="0.00" min="0" step="0.01" style="font-weight:800; color:var(--red);"></td>
+      <td><input type="text" class="paid-note" placeholder="ملاحظة..."></td>
+      <td><button class="btn-del-row" onclick="delRow(this)">✕</button></td>
+    </tr>`;
+  const rpt = document.getElementById('reportSection');
+  rpt.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+  rpt.style.opacity = '0';
+  rpt.style.transform = 'translateY(16px)';
+  setTimeout(() => {
+    rpt.style.display = 'none';
+    rpt.style.opacity = '';
+    rpt.style.transform = '';
+    const card = document.getElementById('inputCard');
+    card.style.display = 'block';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(-12px)';
+    card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }));
+    window.scrollTo({top:0, behavior:'smooth'});
+  }, 360);
+}
+
+function goBackToEdit() {
+  const rpt = document.getElementById('reportSection');
+  rpt.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+  rpt.style.opacity = '0';
+  rpt.style.transform = 'translateY(16px)';
+  setTimeout(() => {
+    rpt.style.display = 'none';
+    rpt.style.opacity = '';
+    rpt.style.transform = '';
+    const card = document.getElementById('inputCard');
+    card.style.display = 'block';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(-12px)';
+    card.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }));
+    window.scrollTo({top:0, behavior:'smooth'});
+  }, 360);
+}
+
+function onReasonChange() {
+  const reason = document.getElementById('termReason').value;
+  const h = document.getElementById('hireDate').value;
+  const l = document.getElementById('lastDay').value;
+  if (reason === 'probation' && h && l) {
+    document.getElementById('probationWarn').classList.toggle('show', daysBetween(new Date(h), new Date(l)) + 1 > 180);
+  } else {
+    document.getElementById('probationWarn').classList.remove('show');
+  }
+}
+
+// ===== DATE UTILS =====
+function dateDiff(startDate, endDate) {
+  let end = new Date(endDate);
+  end.setDate(end.getDate() + 1);
+  let start = new Date(startDate);
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+  let days = end.getDate() - start.getDate();
+  if (days < 0) { months--; days += new Date(end.getFullYear(), end.getMonth(), 0).getDate(); }
+  if (months < 0) { years--; months += 12; }
+  return { years, months, days };
+}
+function daysBetween(d1, d2) { return Math.round((d2 - d1) / 86400000); }
+function durationToYears(d) { return d.years + d.months/12 + d.days/365; }
+function addYearsToDate(date, y) { let d = new Date(date); d.setFullYear(d.getFullYear()+y); return d; }
+function dateToStr(d) { return d.toISOString().split('T')[0]; }
+function formatDate(s) {
+  if (!s) return '-';
+  const d = new Date(s);
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+function durationText(d) {
+  let p = [];
+  if (d.years > 0) p.push(d.years + ' سنة');
+  if (d.months > 0) p.push(d.months + ' شهر');
+  if (d.days > 0) p.push(d.days + ' يوم');
+  return p.length ? p.join(' و') : 'أقل من يوم';
+}
+function durationTextEn(d) {
+  let p = [];
+  if (d.years) p.push(d.years+'Y');
+  if (d.months) p.push(d.months+'M');
+  if (d.days) p.push(d.days+'D');
+  return p.join(' ');
+}
+function fmt(n) { return Number(n).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+// ===== CALC ENGINE =====
+function calcEntitlement(salary, dur) {
+  const yrs = durationToYears(dur);
+  if (yrs <= 0) return [];
+  if (yrs <= 5) {
+    return [{ amount: yrs * salary * 0.5, duration: dur, label: 'كامل مدة الخدمة', rate: '½ راتب/سنة' }];
+  }
+  const remYrs = yrs - 5;
+  const remDur = { years: dur.years - 5, months: dur.months, days: dur.days };
+  if (remDur.years < 0) remDur.years = 0;
+  return [
+    { amount: 5 * salary * 0.5, duration: { years: 5, months: 0, days: 0 }, label: 'أول 5 سنوات', rate: '½ راتب/سنة' },
+    { amount: remYrs * salary, duration: remDur, label: 'السنوات الإضافية', rate: 'راتب كامل/سنة' }
+  ];
+}
+
+function calculate() {
+  const empName = document.getElementById('empName').value.trim();
+  const hireDate = document.getElementById('hireDate').value;
+  const lastDay = document.getElementById('lastDay').value;
+  const salary = parseFloat(document.getElementById('salary').value) || 0;
+  const termReason = document.getElementById('termReason').value;
+  
+  if (!empName || !hireDate || !lastDay || !salary || !termReason) {
+    alert('الرجاء ملء جميع الحقول المطلوبة | Please fill all required fields');
+    return;
+  }
+  
+  if (new Date(lastDay) < new Date(hireDate)) {
+    alert('تاريخ آخر دوام يجب أن يكون بعد تاريخ التعيين | Last day must be after hire date');
+    return;
+  }
+  
+  const dur = dateDiff(hireDate, lastDay);
+  const ent = calcEntitlement(salary, dur);
+  const totalEnt = ent.reduce((s, e) => s + e.amount, 0);
+  
+  // Paid amount
+  let totalPaid = 0;
+  document.getElementById('paidRows').querySelectorAll('tr').forEach(row => {
+    const amt = parseFloat(row.querySelector('.paid-amount').value) || 0;
+    totalPaid += amt;
+  });
+  
+  const net = totalEnt - totalPaid;
+  
+  // Render report
+  document.getElementById('rptName').textContent = empName;
+  document.getElementById('rptId').textContent = document.getElementById('empId').value || '-';
+  document.getElementById('rptBranch').textContent = document.getElementById('branch').value || '-';
+  document.getElementById('rptSalary').textContent = fmt(salary) + ' ريال';
+  document.getElementById('rptHire').textContent = formatDate(hireDate);
+  document.getElementById('rptLast').textContent = formatDate(lastDay);
+  document.getElementById('rptDuration').textContent = durationText(dur);
+  document.getElementById('rptReason').textContent = document.getElementById('termReason').options[document.getElementById('termReason').selectedIndex].text;
+  document.getElementById('rptDate').textContent = formatDate(new Date().toISOString());
+  
+  // Entitlement table
+  let entRows = '';
+  ent.forEach((e, i) => {
+    entRows += `<tr>
+      <td><span class="row-num">${i+1}</span></td>
+      <td class="period-cell">${e.label}</td>
+      <td class="duration-cell">${durationTextEn(e.duration)}</td>
+      <td class="amount-cell">${fmt(e.amount)}</td>
+    </tr>`;
+  });
+  document.getElementById('entitlementRows').innerHTML = entRows;
+  document.getElementById('totalEntitlement').textContent = fmt(totalEnt);
+  
+  // Paid table
+  let paidRows = '';
+  let paidIdx = 1;
+  document.getElementById('paidRows').querySelectorAll('tr').forEach(row => {
+    const from = row.querySelector('.paid-from').value;
+    const to = row.querySelector('.paid-to').value;
+    const amt = parseFloat(row.querySelector('.paid-amount').value) || 0;
+    if (from && to && amt > 0) {
+      paidRows += `<tr>
+        <td><span class="row-num">${paidIdx++}</span></td>
+        <td class="period-cell">${formatDate(from)} - ${formatDate(to)}</td>
+        <td class="amount-cell paid">${fmt(amt)}</td>
+      </tr>`;
+    }
+  });
+  document.getElementById('paidReportRows').innerHTML = paidRows;
+  document.getElementById('totalPaid').textContent = fmt(totalPaid);
+  
+  // Net
+  const isPositive = net >= 0;
+  document.getElementById('netSection').className = isPositive ? 'net-section positive' : 'net-section negative';
+  document.getElementById('netAmount').className = isPositive ? 'net-amount positive' : 'net-amount negative';
+  document.getElementById('netValue').textContent = fmt(Math.abs(net));
+  document.getElementById('netFormula').textContent = isPositive 
+    ? `${fmt(totalEnt)} - ${fmt(totalPaid)} = ${fmt(net)}` 
+    : `${fmt(totalEnt)} - ${fmt(totalPaid)} = (${fmt(Math.abs(net))})`;
+  
+  document.getElementById('overpaidWarn').classList.toggle('show', net < 0);
+  
+  // Show report
+  document.getElementById('inputCard').style.display = 'none';
+  const rpt = document.getElementById('reportSection');
+  rpt.style.display = 'block';
+  rpt.style.opacity = '0';
+  rpt.style.transform = 'translateY(16px)';
+  rpt.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    rpt.style.opacity = '1';
+    rpt.style.transform = 'translateY(0)';
+  }));
+  
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+
+</body>
+</html>
