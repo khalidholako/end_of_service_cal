@@ -575,13 +575,28 @@ input:focus, select:focus {
 
 <!-- APP HEADER -->
 <div class="app-header">
-  <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAA" alt="logo">
+  <svg class="app-logo" width="60" height="60" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Crown top -->
+    <path d="M 100 20 L 120 50 L 140 35 L 130 55 L 150 60 L 125 70 L 135 90 L 100 75 L 65 90 L 75 70 L 50 60 L 70 55 L 60 35 L 80 50 Z" fill="#f0cc55" stroke="#d4aa2a" stroke-width="2"/>
+    
+    <!-- Shield -->
+    <path d="M 100 85 Q 75 95 75 135 Q 75 180 100 210 Q 125 180 125 135 Q 125 95 100 85 Z" fill="none" stroke="#f0cc55" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Decorative L -->
+    <text x="100" y="160" font-family="Cairo, serif" font-size="50" font-weight="bold" fill="#f0cc55" text-anchor="middle" font-style="italic">ل</text>
+  </svg>
   <div class="header-text">
     <h1>✦ لمسات &nbsp;|&nbsp; Lamasat ✦</h1>
     <p>حاسبة مكافأة نهاية الخدمة</p>
     <p class="en">End of Service Gratuity Calculator</p>
   </div>
 </div>
+
+<style>
+.app-logo {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+</style>
 
 <div class="form-section">
 
@@ -692,7 +707,16 @@ input:focus, select:focus {
 
   <!-- Report Header -->
   <div class="report-header">
-    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQA" alt="logo">
+    <svg width="68" height="68" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Crown top -->
+      <path d="M 100 20 L 120 50 L 140 35 L 130 55 L 150 60 L 125 70 L 135 90 L 100 75 L 65 90 L 75 70 L 50 60 L 70 55 L 60 35 L 80 50 Z" fill="#f0cc55" stroke="#d4aa2a" stroke-width="2"/>
+      
+      <!-- Shield -->
+      <path d="M 100 85 Q 75 95 75 135 Q 75 180 100 210 Q 125 180 125 135 Q 125 95 100 85 Z" fill="none" stroke="#f0cc55" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      
+      <!-- Decorative L -->
+      <text x="100" y="160" font-family="Cairo, serif" font-size="50" font-weight="bold" fill="#f0cc55" text-anchor="middle" font-style="italic">ل</text>
+    </svg>
     <div class="report-header-text">
       <div class="company-name-ar">✦ شركة لمسات ✦</div>
       <div class="company-name-en">LAMASAT COMPANY</div>
